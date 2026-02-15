@@ -2,6 +2,8 @@ import json
 from typing import List, Dict
 from abc import ABC, abstractmethod
 from inforealis import Airplane
+
+
 class AbstractStorage(ABC):
     @abstractmethod
     def add_airplane(self, airplane: Airplane) -> None:
@@ -15,26 +17,29 @@ class AbstractStorage(ABC):
     def delete_airplanes(self, conditions: Dict) -> None:
         pass
 
+
 class JSONStorage(AbstractStorage):
     def __init__(self, filename):
         self.filename = filename
         try:
-            with open(filename, 'r') as f:
+            with open(filename, "r") as f:
                 self.data = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
             self.data = []
 
     def save(self):
-        with open(self.filename, 'w') as f:
+        with open(self.filename, "w") as f:
             json.dump(self.data, f, indent=4)
 
     def add_airplane(self, airplane: Airplane) -> None:
-        self.data.append({
-            "registration_country": airplane.registration_country,
-            "callsign": airplane.callsign,
-            "velocity": airplane.velocity,
-            "altitude": airplane.altitude
-        })
+        self.data.append(
+            {
+                "registration_country": airplane.registration_country,
+                "callsign": airplane.callsign,
+                "velocity": airplane.velocity,
+                "altitude": airplane.altitude,
+            }
+        )
         self.save()
 
     def get_by_criteria(self, criteria: Dict) -> List[Dict]:

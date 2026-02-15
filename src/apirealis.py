@@ -38,18 +38,14 @@ class NominatimAPI(AbstractAPI):
     def connect(self):
         # Проверка доступности API
         try:
-            response = requests.get(self.base_url, params={'q': 'Russia', 'format': 'json'})
+            response = requests.get(self.base_url, params={"q": "Russia", "format": "json"})
             response.raise_for_status()
             return True
         except requests.RequestException:
             return False
 
     def get_data(self, country_name):
-        params = {
-            'q': country_name,
-            'format': 'json',
-            'limit': 1
-        }
+        params = {"q": country_name, "format": "json", "limit": 1}
         response = requests.get(self.base_url, params=params)
         response.raise_for_status()
         return response.json()

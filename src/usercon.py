@@ -7,7 +7,7 @@ def fetch_open_sky_data(country_code=None):
     base_url = "https://opensky-network.org/api/states/all"
     params = {}
     if country_code is not None:
-        params['icao24'] = country_code.lower()
+        params["icao24"] = country_code.lower()
     response = requests.get(base_url, params=params)
     data = response.json()
     return data["states"]
@@ -23,12 +23,14 @@ def display_top_n_by_altitude(states, n):
 
 def main():
     while True:
-        user_input = input("\\nВыберите режим:\\n"
-                           "1. Показать самолёты по стране\\n"
-                           "2. Топ-N самолётов по высоте полёта\\n"
-                           "3. Выход\\n")
+        user_input = input(
+            "\\nВыберите режим:\\n"
+            "1. Показать самолёты по стране\\n"
+            "2. Топ-N самолётов по высоте полёта\\n"
+            "3. Выход\\n"
+        )
 
-        if user_input == '1':
+        if user_input == "1":
             country_code = input("Введите код страны (например RU для России): ").strip().upper()
             states = fetch_open_sky_data(country_code)
             if not states:
@@ -38,12 +40,12 @@ def main():
                 rows = [[state[1], state[2], state[7], round(state[9] * 3.6)] for state in states]
                 print(tabulate(rows, headers=headers))
 
-        elif user_input == '2':
+        elif user_input == "2":
             n = int(input("Введите число N для отображения топ-N самолётов: "))
             states = fetch_open_sky_data()
             display_top_n_by_altitude(states, n)
 
-        elif user_input == '3':
+        elif user_input == "3":
             break
         else:
             print("Некорректный выбор. Попробуйте снова.")

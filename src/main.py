@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import requests
-from tabulate import tabulate  # pip install tabulate
+from tabulate import tabulate
 import json
 from typing import List, Dict
 
@@ -42,14 +42,14 @@ class NominatimAPI(AbstractAPI):
 
     def connect(self):
         try:
-            response = requests.get(self.base_url, params={'q': 'Russia', 'format': 'json'})
+            response = requests.get(self.base_url, params={"q": "Russia", "format": "json"})
             response.raise_for_status()
             return True
         except requests.RequestException:
             return False
 
     def get_data(self, country_name):
-        params = {'q': country_name, 'format': 'json', 'limit': 1}
+        params = {"q": country_name, "format": "json", "limit": 1}
         response = requests.get(self.base_url, params=params)
         response.raise_for_status()
         return response.json()
@@ -103,22 +103,24 @@ class JSONStorage(AbstractStorage):
     def __init__(self, filename):
         self.filename = filename
         try:
-            with open(filename, 'r') as f:
+            with open(filename, "r") as f:
                 self.data = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
             self.data = []
 
     def save(self):
-        with open(self.filename, 'w') as f:
+        with open(self.filename, "w") as f:
             json.dump(self.data, f, indent=4)
 
     def add_airplane(self, airplane: Airplane) -> None:
-        self.data.append({
-            "registration_country": airplane.registration_country,
-            "callsign": airplane.callsign,
-            "velocity": airplane.velocity,
-            "altitude": airplane.altitude
-        })
+        self.data.append(
+            {
+                "registration_country": airplane.registration_country,
+                "callsign": airplane.callsign,
+                "velocity": airplane.velocity,
+                "altitude": airplane.altitude,
+            }
+        )
         self.save()
 
     def get_by_criteria(self, criteria: Dict) -> List[Dict]:
@@ -138,7 +140,7 @@ def fetch_open_sky_data(country_code=None):
     base_url = "https://opensky-network.org/api/states/all"
     params = {}
     if country_code is not None:
-        params['icao24'] = country_code.lower()
+        params["icao24"] = country_code.lower()
     response = requests.get(base_url, params=params)
     data = response.json()
     return data["states"]
@@ -154,7 +156,7 @@ def display_top_n_by_altitude(states, n):
 
 # Основная логика приложения
 def main():
-    storage = JSONStorage('airplanes.json')
+    storage = JSONStorage("airplanes.json")
 
     while True:
         user_input = input(
@@ -167,7 +169,7 @@ def main():
             "6. Выход\n"
         )
 
-        if user_input == '1':
+        if user_input == "1":
             country_code = input("Введите код страны (например RU для России): ").strip().upper()
             states = fetch_open_sky_data(country_code)
             if not states:
@@ -177,12 +179,12 @@ def main():
                 rows = [[state[1], state[2], state[7], round(state[9] * 3.6)] for state in states]
                 print(tabulate(rows, headers=headers))
 
-        elif user_input == '2':
+        elif user_input == "2":
             n = int(input("Введите число N для отображения топ-N самолётов: "))
             states = fetch_open_sky_data()
             display_top_n_by_altitude(states, n)
 
-        elif user_input == '3':
+        elif user_input == "3":
             reg_country = input("Регистрационная страна: ")
             callsign = input("Позывной: ")
             vel = float(input("Скорость (км/ч): "))
@@ -191,41 +193,41 @@ def main():
             storage.add_airplane(plane)
             print("Самолёт успешно сохранён в базу данных.")
 
-        elif user_input == '4':
+        elif user_input == "4":
             crit_reg_country = input("Критерий по регистрационной стране (оставьте пустым, если неважно): ")
             crit_callsign = input("Критерий по позывному (оставьте пустым, если неважно): ")
             crit_velocity = input("Критерий по скорости (оставьте пустым, если неважно): ")
             crit_altitude = input("Критерий по высоте (оставьте пустым, если неважно): ")
             criteria = {}
             if crit_reg_country:
-                criteria['registration_country'] = crit_reg_country
+                criteria["registration_country"] = crit_reg_country
             if crit_callsign:
-                criteria['callsign'] = crit_callsign
+                criteria["callsign"] = crit_callsign
             if crit_velocity:
-                criteria['velocity'] = float(crit_velocity)
+                criteria["velocity"] = float(crit_velocity)
             if crit_altitude:
-                criteria['altitude'] = float(crit_altitude)
+                criteria["altitude"] = float(crit_altitude)
             results = storage.get_by_criteria(criteria)
             print(json.dumps(results, indent=4))
 
-        elif user_input == '5':
+        elif user_input == "5":
             cond_reg_country = input("Удалять по критерию регистрации страны (оставьте пустым, если неважно): ")
             cond_callsign = input("Удалять по критерию позывного (оставьте пустым, если неважно): ")
             cond_velocity = input("Удалять по критерию скорости (оставьте пустым, если неважно): ")
             cond_altitude = input("Удалять по критерию высоты (оставьте пустым, если неважно): ")
             conditions = {}
             if cond_reg_country:
-                conditions['registration_country'] = cond_reg_country
+                conditions["registration_country"] = cond_reg_country
             if cond_callsign:
-                conditions['callsign'] = cond_callsign
+                conditions["callsign"] = cond_callsign
             if cond_velocity:
-                conditions['velocity'] = float(cond_velocity)
+                conditions["velocity"] = float(cond_velocity)
             if cond_altitude:
-                conditions['altitude'] = float(cond_altitude)
+                conditions["altitude"] = float(cond_altitude)
             storage.delete_airplanes(conditions)
             print("Самолёты удалены согласно указанным условиям.")
 
-        elif user_input == '6':
+        elif user_input == "6":
             break
         else:
             print("Некорректный выбор. Попробуйте снова.")
