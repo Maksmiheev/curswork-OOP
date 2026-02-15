@@ -1,0 +1,34 @@
+[project]
+name = "curswork-oop"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Maksim_ka",email = "miheevm332@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "flake8 (>=7.3.0,<8.0.0)",
+    "isort (>=7.0.0,<8.0.0)",
+    "black (>=26.1.0,<27.0.0)",
+    "mypy (>=1.19.1,<2.0.0)"
+]
+
+[tool.poetry]
+packages = [{include = "curswork_oop", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 119
+exclude = '.git'
+
+[tool.isort]
+line-length = 119
+
+[tool.mypy]
+disallow_any_unimported = true
+warn_return_any = true
+exclude = 'venv'
